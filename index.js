@@ -24,7 +24,7 @@ const validateSchema = joi.object({
     .required("Phone_Number is required")
     .max(9999999999, "Max length exceed")
     .min(5000000000, "Min Values required"),
-    
+
   Address: joi.string().required("Address is required"),
   email: joi.string().required("email is required"),
   Created_At: joi.date().required("Created_At is required"),
@@ -34,7 +34,7 @@ const updatedValidateSchema = validateSchema.append({
   Contact_ID: joi.string().required("Contact_ID is required"),
 });
 
-app.get("/users", async (req, res) => {
+app.get("/contacts", async (req, res) => {
   try {
     const data = await DataBase();
     const contacts = await data.find({}).toArray();
@@ -49,7 +49,7 @@ app.get("/users", async (req, res) => {
   }
 });
 
-app.get("/users/:id", async (req, res) => {
+app.get("/contacts/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -67,7 +67,7 @@ app.get("/users/:id", async (req, res) => {
   }
 });
 
-app.post("/users", async (req, res) => {
+app.post("/contacts", async (req, res) => {
   try {
     const body = req.body;
     const updatedData = {
@@ -90,7 +90,7 @@ app.post("/users", async (req, res) => {
   }
 });
 
-app.put("/users/:id", async (req, res) => {
+app.put("/contacts/:id", async (req, res) => {
   const id = req.params.id;
   const updated = req.body;
   try {
@@ -115,7 +115,7 @@ app.put("/users/:id", async (req, res) => {
   }
 });
 
-app.delete("/users/:id", async (req, res) => {
+app.delete("/contacts/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const database = await DataBase();
