@@ -3,20 +3,26 @@ import cors from "cors";
 import joi from "joi";
 import { MongoClient, ObjectId } from "mongodb";
 import dotenv from "dotenv";
+
+// to configure .env file
 dotenv.config();
 
-const MONGO_URL = process.env.MONGO_URL;
+const app = express();
+// use json to get allow data from the user
+app.use(express.json());
+// use cors for front end connection
+app.use(cors());
 
+// get mongo url from .env
+const MONGO_URL = process.env.MONGO_URL;
+// connecting to database
 const client = new MongoClient(MONGO_URL);
 async function DataBase() {
   await client.connect();
   return await client.db("Blackwinstech").collection("Contacts");
 }
 
-const app = express();
-app.use(express.json());
-app.use(cors());
-
+// create schema validation check
 const validateSchema = joi.object({
   Name: joi.string().required("Name is required"),
   Phone_Number: joi
@@ -30,14 +36,27 @@ const validateSchema = joi.object({
   Created_At: joi.date().required("Created_At is required"),
 });
 
+// update schema validation check
 const updatedValidateSchema = validateSchema.append({
   Contact_ID: joi.string().required("Contact_ID is required"),
 });
 
+//get api
 app.get("/contacts", async (req, res) => {
   try {
     const data = await DataBase();
-    const contacts = await data.find({}).toArray();
+    const findByName = req.query.name;
+    console.log(findByName);
+    let contacts;
+    //search based on name
+    if (findByName !== undefined) {
+      contacts = await data
+        .find({ Name: { $regex: new RegExp(findByName, "i") } })
+        .toArray();
+    } else {
+      //get all contacts
+      contacts = await data.find({}).toArray();
+    }
     console.log(contacts);
     const updated = contacts.map((item) => {
       const { _id, ...data } = item;
@@ -49,6 +68,7 @@ app.get("/contacts", async (req, res) => {
   }
 });
 
+//get contact by id
 app.get("/contacts/:id", async (req, res) => {
   const id = req.params.id;
 
@@ -67,6 +87,7 @@ app.get("/contacts/:id", async (req, res) => {
   }
 });
 
+//create contact
 app.post("/contacts", async (req, res) => {
   try {
     const body = req.body;
@@ -74,6 +95,7 @@ app.post("/contacts", async (req, res) => {
       ...body,
       Created_At: new Date().toLocaleString(),
     };
+    //validate contact
     const valdate = validateSchema.validate(updatedData);
     if (valdate.error) {
       const errorMessage = valdate.error.details[0].message;
@@ -90,10 +112,12 @@ app.post("/contacts", async (req, res) => {
   }
 });
 
+//update contach based on id
 app.put("/contacts/:id", async (req, res) => {
   const id = req.params.id;
   const updated = req.body;
   try {
+    //validate contact
     const valdate = updatedValidateSchema.validate(updated);
 
     if (valdate.error) {
@@ -115,6 +139,7 @@ app.put("/contacts/:id", async (req, res) => {
   }
 });
 
+//delete contact based on id
 app.delete("/contacts/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -130,10 +155,12 @@ app.delete("/contacts/:id", async (req, res) => {
   }
 });
 
+// 404 error handling
 app.use((req, res, next) => {
   res.status(404).send("Sorry, we could not find that Path!");
 });
 
+//500 error handling
 app.use((req, res, next) => {
   res.status(500).send("Something gone Wrong!");
 });
