@@ -1,0 +1,14 @@
+# Node modules
+/node_modules/
+
+# .env file
+.env
+
+# Logs
+*.log
+
+
+
+# Build directories
+/dist
+/build
