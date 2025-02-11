@@ -41,6 +41,8 @@ const updatedValidateSchema = validateSchema.append({
   Contact_ID: joi.string().required("Contact_ID is required"),
 });
 
+
+
 //get api
 app.get("/contacts", async (req, res) => {
   try {
@@ -66,6 +68,9 @@ app.get("/contacts", async (req, res) => {
   }
 });
 
+
+
+
 //get contact by id
 app.get("/contacts/:id", async (req, res) => {
   const id = req.params.id;
@@ -84,6 +89,9 @@ app.get("/contacts/:id", async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
+
+
 
 //create contact
 app.post("/contacts", async (req, res) => {
@@ -109,6 +117,9 @@ app.post("/contacts", async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
+
+
 
 //update contach based on id
 app.put("/contacts/:id", async (req, res) => {
@@ -145,6 +156,8 @@ app.put("/contacts/:id", async (req, res) => {
   }
 });
 
+
+
 //delete contact based on id
 app.delete("/contacts/:id", async (req, res) => {
   try {
@@ -160,6 +173,8 @@ app.delete("/contacts/:id", async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
+
 
 // 404 error handling
 app.use((req, res, next) => {
