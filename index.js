@@ -115,16 +115,25 @@ app.post("/contacts", async (req, res) => {
 //update contach based on id
 app.put("/contacts/:id", async (req, res) => {
   const id = req.params.id;
-  const updated = req.body;
+  const data = req.body;
   try {
     //validate contact
+    const database = await DataBase();
+    const { _id, Created_At } = await database.findOne({
+      _id: new ObjectId(id)
+    });
+    console.log(_id);
+    const updated = {
+      ...data,
+      Contact_ID: _id.toString(),
+      Created_At: Created_At,
+    };
     const valdate = updatedValidateSchema.validate(updated);
 
     if (valdate.error) {
       const errorMessage = valdate.error.details[0].message;
       return res.status(400).json({ error: errorMessage });
     }
-    const database = await DataBase();
     const contact = await database.updateOne(
       { _id: new ObjectId(id) },
       { $set: updated }
