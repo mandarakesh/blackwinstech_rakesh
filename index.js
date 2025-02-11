@@ -46,7 +46,6 @@ app.get("/contacts", async (req, res) => {
   try {
     const data = await DataBase();
     const findByName = req.query.name;
-    console.log(findByName);
     let contacts;
     //search based on name
     if (findByName !== undefined) {
@@ -57,7 +56,6 @@ app.get("/contacts", async (req, res) => {
       //get all contacts
       contacts = await data.find({}).toArray();
     }
-    console.log(contacts);
     const updated = contacts.map((item) => {
       const { _id, ...data } = item;
       return { ...data, Contact_ID: _id };
@@ -122,7 +120,6 @@ app.put("/contacts/:id", async (req, res) => {
     const { _id, Created_At } = await database.findOne({
       _id: new ObjectId(id)
     });
-    console.log(_id);
     const updated = {
       ...data,
       Contact_ID: _id.toString(),
